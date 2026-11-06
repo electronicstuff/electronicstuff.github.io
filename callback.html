@@ -3,39 +3,45 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Car Hub – sign-in</title>
+<meta name="robots" content="noindex, nofollow">
+<title>TesseX – returning to the app</title>
 <style>
-  body { font-family: system-ui, sans-serif; background: #0e0f12; color: #eceef1; margin: 0; padding: 32px 20px; text-align: center; }
-  .card { max-width: 420px; margin: 0 auto; background: #1c1f24; border-radius: 18px; padding: 24px; }
-  a.btn, button { display: block; width: 100%; box-sizing: border-box; margin-top: 14px; padding: 14px; border-radius: 12px; border: 0;
+  body { font-family: system-ui, sans-serif; background: #0e0f12; color: #eceef1; margin: 0; padding: 32px 20px; }
+  .card { max-width: 440px; margin: 0 auto; background: #1c1f24; border-radius: 18px; padding: 24px; }
+  a.btn { display: block; text-align: center; margin-top: 16px; padding: 14px; border-radius: 12px;
     background: #3e8bff; color: #fff; font-size: 16px; text-decoration: none; }
-  button.secondary { background: #2a2d33; }
-  code { display: block; word-break: break-all; background: #0e0f12; padding: 10px; border-radius: 8px; margin-top: 12px; font-size: 13px; }
-  .muted { color: #8a8f98; font-size: 14px; }
+  .muted { color: #8a8f98; font-size: 14px; line-height: 1.5; }
+  details { margin-top: 18px; }
+  summary { cursor: pointer; color: #8a8f98; font-size: 14px; }
+  code { display: block; word-break: break-all; background: #0e0f12; padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 13px; }
 </style>
 </head>
 <body>
 <div class="card">
-  <h2 id="title">Returning to Car Hub…</h2>
-  <p class="muted" id="msg">If nothing happens, tap the button below.</p>
-  <a class="btn" id="open" href="#">Open Car Hub</a>
-  <button class="secondary" id="copy">Copy code</button>
-  <code id="code"></code>
+  <h2 id="title">Going back to the TesseX app</h2>
+  <p class="muted">TesseX is a personal, non-commercial app for one privately owned car. This page only passes Tesla's
+    sign-in result back to the app on the owner's phone. It never asks for a password, collects data or
+    sends anything anywhere.</p>
+  <a class="btn" id="open" href="#">Open TesseX</a>
+  <details id="manual" hidden>
+    <summary>App didn't open?</summary>
+    <p class="muted">In TesseX, go to Settings → Sign in with Tesla and paste this into “Code or callback URL”.</p>
+    <code id="code"></code>
+  </details>
 </div>
 <script>
   const q = new URLSearchParams(location.search);
-  const code = q.get('code'), state = q.get('state'), error = q.get('error');
+  const code = q.get('code'), error = q.get('error');
   const target = 'carhub://oauth' + location.search;
   document.getElementById('open').href = target;
   if (error) {
     document.getElementById('title').textContent = 'Sign-in was not completed';
-    document.getElementById('msg').textContent = q.get('error_description') || error;
+  } else if (code) {
+    document.getElementById('code').textContent = code;
+    setTimeout(() => { location.href = target; }, 300);
+    // Only offer the manual route if the app hasn't taken over after a few seconds.
+    setTimeout(() => { document.getElementById('manual').hidden = false; }, 4000);
   }
-  document.getElementById('code').textContent = code || '(no code in this address)';
-  document.getElementById('copy').onclick = async () => {
-    try { await navigator.clipboard.writeText(code || ''); document.getElementById('copy').textContent = 'Copied ✓'; } catch (e) {}
-  };
-  if (code) setTimeout(() => { location.href = target; }, 300);
 </script>
 </body>
 </html>
